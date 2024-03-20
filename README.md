@@ -48,12 +48,12 @@ You can define commands using the show() method. For example, to respond to the 
 ```cpp
 int testInt=42;
 if (cmd.show(F("data"))) { // By default 500ms will  display contents in if statement.
-    cmd.print(F("Output message",testInt)); // This will be displayed in Serial monitor.
+    cmd.print(F("Output message"),testInt); // This will be displayed in Serial monitor.
 }
 
 uint8_t banana= 100;
 if(cmd.show(F("banana"), 1000)){ // Changing the display time to 1000ms 
-    cmd.print(F("Banana output", banana));
+    cmd.print(F("Banana output"), banana);
 }
 
 ```
@@ -65,7 +65,7 @@ should be set. For example, to set a value named "temperature", you would write:
 
 ```cpp
 float temperature;
-if (cmdSerial.set(F("temperature"), temperature)) {
+if (cmd.set(F("temperature"), temperature)) {
     // Value has been set, do something with it...
 }
 ```
