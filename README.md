@@ -1,4 +1,4 @@
-# CmdSerial Library
+# Arduino CmdSerial Library
 
 The CmdSerial library provides a simple way to handle commands and data received via the Serial port on Arduino devices.
 It allows you to define commands, set values, and receive input from the Serial monitor in a structured manner.
