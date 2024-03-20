@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#define CMDSERIAL_VERSION "1.0.0"
+#define CMDSERIAL_VERSION "1.0.2"
 
 #ifndef CmdSerial_EnterMsg
 #define CmdSerial_EnterMsgTitle F("[SET] Entered  /")
