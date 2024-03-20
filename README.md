@@ -43,7 +43,7 @@ void loop() {
 
 ### Define command
 
-You can define commands using the show() method. For example, to respond to the command "show data", you would write:
+You can define commands using the show() method. For example, to respond to the command `data show`, you would write:
 
 ```cpp
 int testInt=42;
@@ -69,6 +69,14 @@ if (cmd.set(F("temperature"), temperature)) {
     // Value has been set, do something with it...
 }
 ```
+
+### Serial monitor
+
+To send data from the Serial monitor to your sketch, use the defined command name in the set() method followed by your
+value.\
+The library also provides two keywords: show to start monitoring and stop to stop monitoring for the defined command
+name. \
+If you need to customize these keywords, please refer to the source code of the library.
 
 ## Online example / Playground
 
