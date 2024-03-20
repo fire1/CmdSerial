@@ -47,9 +47,15 @@ You can define commands using the show() method. For example, to respond to the 
 
 ```cpp
 int testInt=42;
-if (cmd.show((F"data"))) {
+if (cmd.show(F("data"))) { // By default 500ms will  display contents in if statement.
     cmd.print(F("Output message",testInt)); // This will be displayed in Serial monitor.
 }
+
+uint8_t banana= 100;
+if(cmd.show(F("banana"), 1000)){ // Changing the display time to 1000ms 
+    cmd.print(F("Banana output", banana));
+}
+
 ```
 
 ### Setting Values
@@ -68,6 +74,10 @@ if (cmdSerial.set(F("temperature"), temperature)) {
 
 You can check online simulation example of the library here: \
 https://wokwi.com/projects/392856762315911169
+
+* `test 12` will set `testInt` to 12.
+* `test show` Starts monitoring display of actual value in the sketch.
+* `test stop` Stops monitoring.
 
 ## License
 
