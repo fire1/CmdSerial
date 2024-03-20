@@ -80,12 +80,12 @@ If you need to customize these keywords, please refer to the source code of the 
 
 ## Online example / Playground
 
-You can check online simulation example of the library here: \
+You can check the online simulation example of the library here: \
 https://wokwi.com/projects/392856762315911169
 
 * `test 12` will set `testInt` to 12.
-* `test show` Starts monitoring display of actual value in the sketch.
-* `test stop` Stops monitoring.
+* `test show` Starts monitoring of the actual value in the sketch.
+* `test stop` Stops the monitoring.
 
 ## License
 
