@@ -152,9 +152,59 @@ public:
         if (set(name)) {
             data = cmdData.toInt();
             if (isMessaging) printMessage(name);
+            return true;
         }
         return false;
     }
+
+    /**
+     * Method to set data in sketch but with specific type /uint8_t/.
+     * @param name
+     * @param data
+     * @param isMessaging
+     * @return
+     */
+    bool set(const String name, uint8_t &data, bool isMessaging = true) {
+        if (set(name)) {
+            data = cmdData.toInt();
+            if (isMessaging) printMessage(name);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to set data in sketch but with specific type /int8_t/.
+     * @param name
+     * @param data
+     * @param isMessaging
+     * @return
+     */
+    bool set(const String name, int8_t &data, bool isMessaging = true) {
+        if (set(name)) {
+            data = cmdData.toInt();
+            if (isMessaging) printMessage(name);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to set data in sketch but with specific type /uint16_t/.
+     * @param name
+     * @param data
+     * @param isMessaging
+     * @return
+     */
+    bool set(const String name, uint16_t &data, bool isMessaging = true) {
+        if (set(name)) {
+            data = cmdData.toInt();
+            if (isMessaging) printMessage(name);
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Method to set data in sketch but with specific type /double/.
@@ -167,6 +217,7 @@ public:
         if (set(name)) {
             data = cmdData.toDouble();
             if (isMessaging) printMessage(name);
+            return true;
         }
         return false;
     }
@@ -182,10 +233,78 @@ public:
         if (set(name)) {
             data = cmdData;
             if (isMessaging) printMessage(name);
+            return true;
         }
         return false;
     }
 
+    /**
+     * Shortcut to display message with numbers.
+     * @param msg
+     * @param value
+     */
+    void print(String msg, long value) {
+        Serial.print(msg);
+        Serial.print(spr);
+        Serial.print(value);
+        Serial.println();
+    }
+
+    /**
+     * Just to support bigger numbers
+     * @param msg
+     * @param value
+     */
+    void print(String msg, unsigned long value) {
+        Serial.print(msg);
+        Serial.print(spr);
+        Serial.print(value);
+        Serial.println();
+    }
+    /**
+     * Just to support for float
+     * @param msg
+     * @param value
+     */
+    void print(String msg, float value) {
+        Serial.print(msg);
+        Serial.print(spr);
+        Serial.print(value);
+        Serial.println();
+    }
+    /**
+     * Additional support of the number
+     * @param msg
+     * @param value
+     */
+    void print(String msg, int8_t value) {
+        print(msg, (unsigned long) value);
+    }
+    /**
+     * Additional support of the number
+     * @param msg
+     * @param value
+     */
+    void print(String msg, uint8_t value) {
+        print(msg, (unsigned long) value);
+    }
+    /**
+     * Additional support of the number
+     * @param msg
+     * @param value
+     */
+    void print(String msg, int value) {
+        print(msg, (long) value);
+    }
+
+    /**
+     * Additional support of the number
+     * @param msg
+     * @param value
+     */
+    void print(String msg, unsigned int value) {
+        print(msg, (unsigned long) value);
+    }
 
 private:
 
@@ -203,4 +322,3 @@ private:
 };
 
 #endif //CMDSERIAL_H
-
