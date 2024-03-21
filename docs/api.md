@@ -1,7 +1,17 @@
 # CmdSerial Library
----
 
-### The constructor for the CmdSerial class.
+**Methods:**
+
+- [CmdSerial()](#cmdserial)
+- [listen()](#listen)
+- [show()](#show)
+- [get()](#get)
+- [set()](#set)
+- [print()](#print)
+
+### `CmdSerial()`
+
+The constructor for the CmdSerial class.
 
 **Syntax**:
 
@@ -18,7 +28,7 @@ CmdSerial(Stream &theSerial = Serial, const char separator = ' ', const char end
 
 ---
 
-### Method `listen()`
+### `listen()`
 
 Listens for Serial stream input and parses it based on methods used in this class. This method is required to be called
 in the `loop()` function for this class to work.
@@ -35,8 +45,7 @@ void listen()
 
 ---
 
-### Method `show()`
-
+### `show()`
 
 Shows data for given cycles.
 
@@ -56,7 +65,7 @@ bool show(const String &name, unsigned long milliSeconds = 500)
 
 ---
 
-### Method `get()`
+### `get()`
 
 Gets the data received via Serial.
 
@@ -72,30 +81,7 @@ String get()
 
 ---
 
-
-### Method `set()`
-
-Sets value in the sketch.
-
-**Syntax**:
-
-```cpp
-bool set(const String name)
-```
-
-**Parameters**:
-
-- `name`: The name of the command.
-
-**Returns**:
-
-- `true`: If the command is successfully set.
-- `false`: If the command is not set.
-
----
-
-
-### Method/s `set()`
+### `set()`
 
 Sets data in the sketch with specific types.
 
@@ -117,8 +103,7 @@ Sets data in the sketch with specific types.
 
 ---
 
-
-### Method/s `print()`
+### `print()`
 
 Prints messages with different data types.
 
@@ -132,6 +117,6 @@ Prints messages with different data types.
 
 - `msg`: The message to print.
 - `value`: The value to print /`int`, `float`, `uint8_t` etc../.
--  **Returns**: None.
+- **Returns**: None.
 
 
