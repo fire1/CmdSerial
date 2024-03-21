@@ -9,6 +9,7 @@
 - [set()](#set)
 - [print()](#print)
 
+
 ### `CmdSerial()`
 
 The constructor for the CmdSerial class.
