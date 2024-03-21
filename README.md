@@ -89,7 +89,7 @@ https://wokwi.com/projects/392856762315911169
 
 ## Documentation
 
-All methods can be found in [api.md](docs/myfile.md).
+All methods can be found in [api.md](docs/api.md).
 
 ## License
 
