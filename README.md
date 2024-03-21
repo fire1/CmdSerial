@@ -87,6 +87,10 @@ https://wokwi.com/projects/392856762315911169
 * `test show` Starts monitoring of the actual value in the sketch.
 * `test stop` Stops the monitoring.
 
+## Documentation
+
+All methods can be found in [api.md](docs/myfile.md).
+
 ## License
 
 This library is released under the MIT License. See the LICENSE file for details.
