@@ -1,5 +1,5 @@
 # CmdSerial Library
----
+
 
 ### The constructor for the CmdSerial class.
 
