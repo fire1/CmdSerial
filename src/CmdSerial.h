@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#define CMDSERIAL_VERSION "1.0.4"
+#define CMDSERIAL_VERSION "1.0.6"
 
 #ifndef CmdSerial_EnterMsg
 #define CmdSerial_EnterMsgTitle F("[SET] Entered  /")
@@ -247,7 +247,7 @@ public:
      */
     bool set(const String name, unsigned long &data, bool isMessaging = true) {
         if (set(name)) {
-            data = cmdData;
+            data = cmdData.toInt();
             if (isMessaging) printMessage(name);
             return true;
         }
@@ -263,7 +263,7 @@ public:
      */
     bool set(const String name,  long &data, bool isMessaging = true) {
         if (set(name)) {
-            data = cmdData;
+            data = cmdData.toInt();
             if (isMessaging) printMessage(name);
             return true;
         }
