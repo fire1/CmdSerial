@@ -239,6 +239,38 @@ public:
     }
 
     /**
+     * Method to set data in the sketch for unsigned long.
+     * @param name
+     * @param data
+     * @param isMessaging
+     * @return
+     */
+    bool set(const String name, unsigned long &data, bool isMessaging = true) {
+        if (set(name)) {
+            data = cmdData;
+            if (isMessaging) printMessage(name);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to set data in the sketch for  long.
+     * @param name
+     * @param data
+     * @param isMessaging
+     * @return
+     */
+    bool set(const String name,  long &data, bool isMessaging = true) {
+        if (set(name)) {
+            data = cmdData;
+            if (isMessaging) printMessage(name);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Shortcut to display message with numbers.
      * @param msg
      * @param value
@@ -267,6 +299,18 @@ public:
      * @param value
      */
     void print(String msg, float value) {
+        Serial.print(msg);
+        Serial.print(spr);
+        Serial.print(value);
+        Serial.println();
+    }
+
+    /**
+     * Just to support for float
+     * @param msg
+     * @param value
+     */
+    void print(String msg, double value) {
         Serial.print(msg);
         Serial.print(spr);
         Serial.print(value);
