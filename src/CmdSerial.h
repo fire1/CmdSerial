@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#define CMDSERIAL_VERSION "1.0.6"
+#define CMDSERIAL_VERSION "1.0.2"
 
 #ifndef CmdSerial_EnterMsg
 #define CmdSerial_EnterMsgTitle F("[SET] Entered  /")
@@ -42,7 +42,7 @@ private:
     Stream *serial;
     String cmdName;
     String cmdData;
-
+    String printer;
 
     unsigned long lastCmdTime = 0;
     char spr;
@@ -239,35 +239,15 @@ public:
     }
 
     /**
-     * Method to set data in the sketch for unsigned long.
-     * @param name
-     * @param data
-     * @param isMessaging
-     * @return
+     * The common print function
+     * @param msg
+     * @param value
      */
-    bool set(const String name, unsigned long &data, bool isMessaging = true) {
-        if (set(name)) {
-            data = cmdData.toInt();
-            if (isMessaging) printMessage(name);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Method to set data in the sketch for  long.
-     * @param name
-     * @param data
-     * @param isMessaging
-     * @return
-     */
-    bool set(const String name,  long &data, bool isMessaging = true) {
-        if (set(name)) {
-            data = cmdData.toInt();
-            if (isMessaging) printMessage(name);
-            return true;
-        }
-        return false;
+    void print(String msg, String value) {
+        Serial.print(msg);
+        Serial.print(spr);
+        Serial.print(value);
+        Serial.println();
     }
 
     /**
@@ -276,10 +256,9 @@ public:
      * @param value
      */
     void print(String msg, long value) {
-        Serial.print(msg);
-        Serial.print(spr);
-        Serial.print(value);
-        Serial.println();
+        printer = String(value);
+        print(msg, printer);
+        printer = "";
     }
 
     /**
@@ -288,21 +267,9 @@ public:
      * @param value
      */
     void print(String msg, unsigned long value) {
-        Serial.print(msg);
-        Serial.print(spr);
-        Serial.print(value);
-        Serial.println();
-    }
-    /**
-     * Just to support for float
-     * @param msg
-     * @param value
-     */
-    void print(String msg, float value) {
-        Serial.print(msg);
-        Serial.print(spr);
-        Serial.print(value);
-        Serial.println();
+        printer = String(value);
+        print(msg, printer);
+        printer = "";
     }
 
     /**
@@ -310,12 +277,12 @@ public:
      * @param msg
      * @param value
      */
-    void print(String msg, double value) {
-        Serial.print(msg);
-        Serial.print(spr);
-        Serial.print(value);
-        Serial.println();
+    void print(String msg, float value) {
+        printer = String(value);
+        print(msg, printer);
+        printer = "";
     }
+
     /**
      * Additional support of the number
      * @param msg
@@ -324,6 +291,7 @@ public:
     void print(String msg, int8_t value) {
         print(msg, (unsigned long) value);
     }
+
     /**
      * Additional support of the number
      * @param msg
@@ -332,6 +300,7 @@ public:
     void print(String msg, uint8_t value) {
         print(msg, (unsigned long) value);
     }
+
     /**
      * Additional support of the number
      * @param msg
