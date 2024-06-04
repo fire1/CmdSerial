@@ -46,7 +46,7 @@
         @author Angel Zaprianov /fire1/
 */
 class CmdSerial {
-  private:
+private:
     bool isSet = false;
     bool isHelp = false;
     Stream *serial;
@@ -251,8 +251,7 @@ class CmdSerial {
     bool set(const String name, uint8_t &data, const String help = "", bool isMessaging = true) {
         if (set(name, help)) {
             data = cmdData.toInt();
-            if (isMessaging)
-                printMessage(name);
+            if (isMessaging) printMessage(name);
             return true;
         }
         return false;
@@ -355,10 +354,10 @@ class CmdSerial {
     }
 
     /**
-            Just to support bigger numbers
-            @param msg
-            @param value
-        */
+     * Just to support bigger numbers
+     * @param msg
+     * @param value
+     */
     void print(String msg, unsigned long value) {
         printer = String(value);
         print(msg, printer);

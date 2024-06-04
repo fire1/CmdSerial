@@ -103,6 +103,10 @@ Type `help` in the terminal in order to get a list of avelabe commands.
 * `test show` Starts monitoring of the actual value in the sketch.
 * `test stop` Stops the monitoring.
 
+## Documentation
+
+All methods can be found in [api.md](docs/api.md).
+
 ## License
 
 This library is released under the MIT License. See the LICENSE file for details.
