@@ -1,4 +1,3 @@
-//
 // Created by fire1 on 2024-03-20.
 //
 
@@ -7,7 +6,6 @@
 
 #include <Arduino.h>
 
-#define CMDSERIAL_VERSION "1.1.0"
 
 #ifndef CmdSerial_EnterMsg
 #define CmdSerial_EnterMsgTitle F("[SET] Entered  /")
@@ -46,8 +44,9 @@
         @author Angel Zaprianov /fire1/
 */
 class CmdSerial {
-private:
+  private:
     bool isSet = false;
+    bool isList = false;
     bool isHelp = false;
     Stream *serial;
     String cmdName;
@@ -80,12 +79,24 @@ private:
     }
 
     /**
-            Listens for Serial stream input and parses it based on methods used in this class.
-                        This method is required be called in the `loop()` function in order this class to work.
-        */
+     * Listens for Serial stream input and parses it based on methods used in this class.
+     *  This method is required be called in the `loop()` function in order this class to work.
+     */
     void listen() {
+        //
+        // Clear the command after help block is displayed.
+        if (isHelp) {
+            cmdData = "";
+            cmdName = "";
+        }
+
+        //
+        // Reset stateds
         isSet = false;
+        isList = false;
         isHelp = false;
+
+
         if (serial->available() > 0) {
 
             //
@@ -96,30 +107,35 @@ private:
             //
             // Detect help term
             if (cmdName == CmdSerial_KeywordHelp) {
-                isHelp = true;
+                isList = true;
                 serial->println(F("List of available commands:"));
                 serial->println(F("---------------------------"));
                 return;
             }
 
-
             //
             // Reads input data/keyword
             cmdData = serial->readStringUntil(eol);
             cmdData.trim();
+
+            //
+            // Enable help block from the keyword
+            if (cmdData == CmdSerial_KeywordHelp) {
+                isHelp = true;
+            }
         }
     }
 
     /**
-            Shows data for given cycles, should be called in `if` statement.
-            @param name  The command name
-            @param milliSeconds  Time/interval used to display data /return true/
-            @param help The command help
-            @return bool
-        */
+      * Shows data for given cycles, should be called in `if` statement.
+      * @param name  The command name
+      * @param milliSeconds  Time/interval used to display data /return true/
+      * @param help The command help
+      * @return bool
+      */
     bool show(const String name, unsigned long milliSeconds = CmdSerial_ShowTime, String help = "") {
 
-        if (isHelp)
+        if (isList)
             printHelp(name, help, F("\t [show, stop] \t - "));
         if (name != cmdName && !isSet)
             return false;
@@ -143,14 +159,13 @@ private:
             //
             // Display help block
         } else if (name == cmdName && cmdData == CmdSerial_KeywordHelp) {
-
             //
             // Generating the title for help block
-            String title = F("Help for <");
+            String title = F("`");
             title += name;
-            title += F(">");
+            title += F("`\t (show) \t - ");
 
-            serial->println(title);
+            serial->print(title);
 
             if (help.length() > 0)
                 serial->println(help);
@@ -164,21 +179,21 @@ private:
     }
 
     /**
-            Shows data with help block
-            @param name The command name
-            @param help The command help
-            @return bool
-        */
+      * Shows data with help block
+      * @param name The command name
+      * @param help The command help
+      * @return bool
+      */
     bool show(const String name, String help = "") {
         return this->show(name, CmdSerial_ShowTime, help);
     }
 
     /**
-            Shows data with time interval /milliSeconds/
-            @param name The command name
-            @param milliSeconds Time between displaing the data.
-            @return bool
-        */
+        Shows data with time interval /milliSeconds/
+        @param name The command name
+        @param milliSeconds Time between displaing the data.
+        @return bool
+    */
     bool show(const String name, unsigned long milliSeconds) {
         return this->show(name, milliSeconds, "");
     }
@@ -188,33 +203,40 @@ private:
     }
 
     /**
-            Method to set value in the sketch, should be called in `if` statement /not recommended for use/.
-            @param name
-            @return
-        */
-    bool set(const String name, const String help = "") {
-        if (isHelp)
-            printHelp(name, help, F("\t (set) <value> \t - "));
+        Method to set value in the sketch, should be called in `if` statement /not recommended for use/.
+        @param name
+        @return
+    */
+    bool _set(const String name, const String help = "") {
 
-        if (name != cmdName)
+        if (isList || isHelp && name == cmdName) {
+            printHelp(name, help, F("\t (set) <value> \t - "));
             return false;
+        }
+
+        if (name != cmdName || isHelp)
+            return false;
+
         if (cmdData == CmdSerial_KeywordShow || cmdData == CmdSerial_KeywordStop)
             return false;
+
+        Serial.println(cmdName);
+        Serial.println(cmdData);
         isSet = true;
         cmdName = "";
         return true;
     }
 
     /**
-            Method to set data in sketch but with specific type /float/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /float/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, float &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData.toFloat();
             if (isMessaging)
                 printMessage(name);
@@ -224,15 +246,16 @@ private:
     }
 
     /**
-            Method to set data in sketch but with specific type /int/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /int/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, int &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+
+        if (_set(name, help)) {
             data = cmdData.toInt();
             if (isMessaging)
                 printMessage(name);
@@ -242,31 +265,32 @@ private:
     }
 
     /**
-            Method to set data in sketch but with specific type /uint8_t/.
-            @param name
-            @param data
-            @param isMessaging
-            @return
-        */
+      * Method to set data in sketch but with specific type /uint8_t/.
+      * @param name
+      * @param data
+      * @param isMessaging
+      * @return
+    */
     bool set(const String name, uint8_t &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData.toInt();
-            if (isMessaging) printMessage(name);
+            if (isMessaging)
+                printMessage(name);
             return true;
         }
         return false;
     }
 
     /**
-            Method to set data in sketch but with specific type /int8_t/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /int8_t/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, int8_t &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData.toInt();
             if (isMessaging)
                 printMessage(name);
@@ -276,15 +300,15 @@ private:
     }
 
     /**
-            Method to set data in sketch but with specific type /uint16_t/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /uint16_t/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, uint16_t &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData.toInt();
             if (isMessaging)
                 printMessage(name);
@@ -295,15 +319,15 @@ private:
 
 
     /**
-            Method to set data in sketch but with specific type /double/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /double/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, double &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData.toDouble();
             if (isMessaging)
                 printMessage(name);
@@ -313,15 +337,15 @@ private:
     }
 
     /**
-            Method to set data in sketch but with specific type /String/.
-            @param name
-            @param data
-            @param help
-            @param isMessaging
-            @return
-        */
+        Method to set data in sketch but with specific type /String/.
+        @param name
+        @param data
+        @param help
+        @param isMessaging
+        @return
+    */
     bool set(const String name, String &data, const String help = "", bool isMessaging = true) {
-        if (set(name, help)) {
+        if (_set(name, help)) {
             data = cmdData;
             if (isMessaging)
                 printMessage(name);
@@ -331,10 +355,10 @@ private:
     }
 
     /**
-            The common print function
-            @param msg
-            @param value
-        */
+        The common print function
+        @param msg
+        @param value
+    */
     void print(String msg, String value) {
         Serial.print(msg);
         Serial.print(spr);
@@ -343,10 +367,10 @@ private:
     }
 
     /**
-            Shortcut to display message with numbers.
-            @param msg
-            @param value
-        */
+        Shortcut to display message with numbers.
+        @param msg
+        @param value
+    */
     void print(String msg, long value) {
         printer = String(value);
         print(msg, printer);
@@ -354,10 +378,10 @@ private:
     }
 
     /**
-     * Just to support bigger numbers
-     * @param msg
-     * @param value
-     */
+    * Just to support bigger numbers
+    * @param msg
+    * @param value
+    */
     void print(String msg, unsigned long value) {
         printer = String(value);
         print(msg, printer);
@@ -365,10 +389,10 @@ private:
     }
 
     /**
-            Just to support for float
-            @param msg
-            @param value
-        */
+    * Just to support for float
+    * @param msg
+    * @param value
+    */
     void print(String msg, float value) {
         printer = String(value);
         print(msg, printer);
@@ -376,46 +400,46 @@ private:
     }
 
     /**
-            Additional support of the number
-            @param msg
-            @param value
-        */
+      * Additional support of the number
+      * @param msg
+      * @param value
+      */
     void print(String msg, int8_t value) {
         print(msg, (unsigned long)value);
     }
 
     /**
-            Additional support of the number
-            @param msg
-            @param value
-        */
+     * Additional support of the number
+     * @param msg
+     * @param value
+     */
     void print(String msg, uint8_t value) {
         print(msg, (unsigned long)value);
     }
 
     /**
-            Additional support of the number
-            @param msg
-            @param value
-        */
+      * Additional support of the number
+      * @param msg
+      * @param value
+    */
     void print(String msg, int value) {
         print(msg, (long)value);
     }
 
     /**
-            Additional support of the number
-            @param msg
-            @param value
-        */
+        Additional support of the number
+        @param msg
+        @param value
+    */
     void print(String msg, unsigned int value) {
         print(msg, (unsigned long)value);
     }
 
   private:
     /**
-                Shows message as a response to the Set method.
-                @param name
-        */
+            Shows message as a response to the Set method.
+            @param name
+    */
     void printMessage(const String name) {
         serial->print(CmdSerial_EnterMsgTitle);
         serial->print(name);
@@ -425,10 +449,10 @@ private:
     }
 
     /**
-                Generates help block for show keyword
-                @param name Command name
-                @param help Command help
-        */
+    Generates help block for show keyword
+    @param name Command name
+    @param help Command help
+    */
     void printHelp(const String name, const String help, const String type) {
 
         serial->print(F("`"));
