@@ -1,11 +1,11 @@
-#include "CmdSerial.h"
+#include <CmdSerial.h>
 
 CmdSerial cmd;
 int testInt = 0;
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Example started...");
+    Serial.println("Example started, use `help` to list all commands.");
 }
 
 
@@ -25,7 +25,7 @@ void loop() {
 
     //
     // Example how to check what is the value of testInt.
-    if (cmd.show(F("test"))) {
+    if (cmd.show(F("test"),F("This command is just for test..."))) {
         cmd.print(F("Test value:"), testInt);
     }
 

@@ -52,9 +52,11 @@ if (cmd.show(F("data"))) { // By default 500ms will  display contents in if stat
 }
 
 uint8_t banana= 100;
-if(cmd.show(F("banana"), 1000)){ // Changing the display time to 1000ms 
+if(cmd.show(F("banana",F("Some information for help."), 1000)){ // Changing the display time to 1000ms
     cmd.print(F("Banana output"), banana);
 }
+
+
 
 ```
 
@@ -66,9 +68,21 @@ should be set. For example, to set a value named "temperature", you would write:
 ```cpp
 float temperature;
 if (cmd.set(F("temperature"), temperature)) {
-    // Value has been set, do something with it...
+    // Value has been set, do something extra with it...
 }
 ```
+### The Help function
+The `CmdSerial` library provides a built-in mechanism to retrieve information about available commands and their usage.
+
+Here's how to access it:
+
+**List all commands by typing `help` in the Serial Monitor:** \
+This will trigger the library to print a list of all defined (set,show) commands to the Serial Monitor.
+
+**Individual Command Help:**\
+For more detailed information about a specific command,type the command name followed by "help" in the Serial Monitor.\
+For example, if you have a command named `data`, you would type `data help`.
+
 
 ### Serial monitor
 
@@ -82,6 +96,8 @@ If you need to customize these keywords, please refer to the source code of the 
 
 You can check the online simulation example of the library here: \
 https://wokwi.com/projects/392856762315911169
+
+Type `help` in the terminal in order to get a list of avelabe commands.
 
 * `test 12` will set `testInt` to 12.
 * `test show` Starts monitoring of the actual value in the sketch.

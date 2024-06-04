@@ -53,7 +53,7 @@ Shows data for given cycles.
 **Syntax**:
 
 ```cpp
-bool show(const String &name, unsigned long milliSeconds = 500)
+bool show(const String name,const String help, unsigned long milliSeconds = 500)
 ```
 
 **Parameters**:
@@ -89,7 +89,7 @@ Sets data in the sketch with specific types.
 **Syntax**:
 
 ```cpp
- bool set(const String name, T &data, bool isMessaging = true)
+ bool set(const String name, T &data, const String help = "",bool isMessaging = true)
  ```
 
 **Parameters**:
