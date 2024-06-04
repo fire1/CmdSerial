@@ -37,11 +37,10 @@
 
 
 /**
-    @class CmdSerial
-    @brief A simple command providing class for Serial.
-    @details
-
-        @author Angel Zaprianov /fire1/
+ * @class CmdSerial
+ *  @brief A simple command providing class for Serial.
+ *  @details
+ *  @author Angel Zaprianov /fire1/
 */
 class CmdSerial {
   private:
@@ -64,11 +63,11 @@ class CmdSerial {
     static const char EndOfLine = '\n';
 
     /**
-            Constructor of the class with dependencies.
-            @param theSerial Serial stream to be used.
-            @param separator The separator of the command.
-            @param endOfLine The end character of the command line.
-        */
+     * Constructor of the class with dependencies.
+     * @param theSerial Serial stream to be used.
+     * @param separator The separator of the command.
+     * @param endOfLine The end character of the command line.
+     */
     CmdSerial(
         Stream &theSerial = Serial,
         const char separator = CmdSerial::Separator,
@@ -189,11 +188,11 @@ class CmdSerial {
     }
 
     /**
-        Shows data with time interval /milliSeconds/
-        @param name The command name
-        @param milliSeconds Time between displaing the data.
-        @return bool
-    */
+     * Shows data with time interval /milliSeconds/
+     *  @param name The command name
+     *  @param milliSeconds Time between displaing the data.
+     *  @return bool
+     */
     bool show(const String name, unsigned long milliSeconds) {
         return this->show(name, milliSeconds, "");
     }
@@ -203,9 +202,9 @@ class CmdSerial {
     }
 
     /**
-        Method to set value in the sketch, should be called in `if` statement /not recommended for use/.
-        @param name
-        @return
+     * Method to set value in the sketch, should be called in `if` statement /not recommended for use/.
+     *  @param name
+     *  @return
     */
     bool _set(const String name, const String help = "") {
 
@@ -228,13 +227,13 @@ class CmdSerial {
     }
 
     /**
-        Method to set data in sketch but with specific type /float/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
-    */
+     *  Method to set data in sketch but with specific type /float/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
+     */
     bool set(const String name, float &data, const String help = "", bool isMessaging = true) {
         if (_set(name, help)) {
             data = cmdData.toFloat();
@@ -246,13 +245,13 @@ class CmdSerial {
     }
 
     /**
-        Method to set data in sketch but with specific type /int/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
-    */
+     *  Method to set data in sketch but with specific type /int/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
+     */
     bool set(const String name, int &data, const String help = "", bool isMessaging = true) {
 
         if (_set(name, help)) {
@@ -282,12 +281,12 @@ class CmdSerial {
     }
 
     /**
-        Method to set data in sketch but with specific type /int8_t/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
+     *  Method to set data in sketch but with specific type /int8_t/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
     */
     bool set(const String name, int8_t &data, const String help = "", bool isMessaging = true) {
         if (_set(name, help)) {
@@ -300,13 +299,13 @@ class CmdSerial {
     }
 
     /**
-        Method to set data in sketch but with specific type /uint16_t/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
-    */
+     *  Method to set data in sketch but with specific type /uint16_t/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
+     */
     bool set(const String name, uint16_t &data, const String help = "", bool isMessaging = true) {
         if (_set(name, help)) {
             data = cmdData.toInt();
@@ -319,13 +318,13 @@ class CmdSerial {
 
 
     /**
-        Method to set data in sketch but with specific type /double/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
-    */
+     *  Method to set data in sketch but with specific type /double/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
+     */
     bool set(const String name, double &data, const String help = "", bool isMessaging = true) {
         if (_set(name, help)) {
             data = cmdData.toDouble();
@@ -337,13 +336,13 @@ class CmdSerial {
     }
 
     /**
-        Method to set data in sketch but with specific type /String/.
-        @param name
-        @param data
-        @param help
-        @param isMessaging
-        @return
-    */
+     *  Method to set data in sketch but with specific type /String/.
+     *  @param name
+     *  @param data
+     *  @param help
+     *  @param isMessaging
+     *  @return
+     */
     bool set(const String name, String &data, const String help = "", bool isMessaging = true) {
         if (_set(name, help)) {
             data = cmdData;
@@ -355,10 +354,10 @@ class CmdSerial {
     }
 
     /**
-        The common print function
-        @param msg
-        @param value
-    */
+     *  The common print function
+     *  @param msg
+     *  @param value
+     */
     void print(String msg, String value) {
         Serial.print(msg);
         Serial.print(spr);
@@ -367,10 +366,10 @@ class CmdSerial {
     }
 
     /**
-        Shortcut to display message with numbers.
-        @param msg
-        @param value
-    */
+     *  Shortcut to display message with numbers.
+     *  @param msg
+     *  @param value
+     */
     void print(String msg, long value) {
         printer = String(value);
         print(msg, printer);
@@ -437,9 +436,9 @@ class CmdSerial {
 
   private:
     /**
-            Shows message as a response to the Set method.
-            @param name
-    */
+     * Shows message as a response to the Set method.
+     *  @param name
+     */
     void printMessage(const String name) {
         serial->print(CmdSerial_EnterMsgTitle);
         serial->print(name);
@@ -449,10 +448,10 @@ class CmdSerial {
     }
 
     /**
-    Generates help block for show keyword
-    @param name Command name
-    @param help Command help
-    */
+     * Generates help block for show keyword
+     * @param name Command name
+     * @param help Command help
+     */
     void printHelp(const String name, const String help, const String type) {
 
         serial->print(F("`"));
