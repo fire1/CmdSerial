@@ -132,7 +132,7 @@ class CmdSerial {
       * @param help The command help
       * @return bool
       */
-    bool show(const String name, unsigned long milliSeconds = CmdSerial_ShowTime, String help = "") {
+    bool _show(const String name, unsigned long milliSeconds = CmdSerial_ShowTime, String help = "") {
 
         if (isList)
             printHelp(name, help, F("\t [show, stop] \t - "));
@@ -179,12 +179,22 @@ class CmdSerial {
 
     /**
       * Shows data with help block
+    * @param name The command name
+    * @param help The command help
+    * @return bool
+    */
+    bool show(const String name) {
+        return _show(name, CmdSerial_ShowTime, "");
+    }
+
+    /**
+      * Shows data with help block
       * @param name The command name
       * @param help The command help
       * @return bool
       */
-    bool show(const String name, String help = "") {
-        return this->show(name, CmdSerial_ShowTime, help);
+    bool show(const String name, String help) {
+        return _show(name, CmdSerial_ShowTime, help);
     }
 
     /**
@@ -194,7 +204,7 @@ class CmdSerial {
      *  @return bool
      */
     bool show(const String name, unsigned long milliSeconds) {
-        return this->show(name, milliSeconds, "");
+        return _show(name, milliSeconds, "");
     }
 
     String get() {
@@ -226,6 +236,18 @@ class CmdSerial {
         return true;
     }
 
+    /**
+     * An call from single tag only
+     */
+    bool set(const String name) {
+
+        if (_set(name, "")) {
+            cmdData = "";
+            printMessage(name);
+            return true;
+        }
+        return false;
+    }
     /**
      *  Method to set data in sketch but with specific type /float/.
      *  @param name
