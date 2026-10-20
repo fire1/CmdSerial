@@ -37,10 +37,15 @@
 
 
 /**
- * PROGMEM string literal: `"hello"_f` is equivalent to `F("hello")`.
- * Uses GCC's character-pack UDL so the text stays in flash on AVR.
+ * String literal `"hello"_f` for labels passed to print/set/show.
+ *
+ * On C++14+ (GCC character-pack UDL) the text is stored in PROGMEM on AVR,
+ * same idea as F("hello"). Arduino AVR defaults to gnu++11, where that UDL
+ * is unavailable, so the fallback keeps a normal const char* string instead.
  */
 namespace CmdSerialLiterals {
+
+#if __cplusplus >= 201402L
 
 template <typename T, T... Chars>
 struct FlashString {
@@ -58,6 +63,20 @@ template <typename T, T... Chars>
 constexpr FlashString<T, Chars...> operator""_f() {
     return {};
 }
+
+#else
+
+struct FlashString {
+    const char *data;
+    constexpr explicit FlashString(const char *s) : data(s) {}
+    constexpr operator const char *() const { return data; }
+};
+
+constexpr FlashString operator""_f(const char *s, size_t) {
+    return FlashString{s};
+}
+
+#endif
 
 } // namespace CmdSerialLiterals
 
@@ -208,18 +227,9 @@ class CmdSerial {
     * @param help The command help
     * @return bool
     */
-    bool show(const String &name) {
-        return _show(name, CmdSerial_ShowTime, "");
-    }
-
-    /**
-      * Shows data with help block
-      * @param name The command name
-      * @param help The command help
-      * @return bool
-      */
-    bool show(const String &name, const String &help) {
-        return _show(name, CmdSerial_ShowTime, help);
+    template<typename Name>
+    bool show(const Name &name) {
+        return _show(String(name), CmdSerial_ShowTime, "");
     }
 
     /**
@@ -228,15 +238,48 @@ class CmdSerial {
      *  @param milliSeconds Time between displaing the data.
      *  @return bool
      */
-    bool show(const String &name, unsigned long milliSeconds) {
-        return _show(name, milliSeconds, "");
+    template<typename Name>
+    bool show(const Name &name, unsigned long milliSeconds) {
+        return _show(String(name), milliSeconds, "");
+    }
+
+    /**
+      * Shows data with help block
+      * @param name The command name
+      * @param help The command help
+      * @return bool
+      */
+    template<typename Name>
+    bool show(const Name &name, const char *help) {
+        return _show(String(name), CmdSerial_ShowTime, String(help));
+    }
+
+    template<typename Name>
+    bool show(const Name &name, const String &help) {
+        return _show(String(name), CmdSerial_ShowTime, help);
+    }
+
+    template<typename Name>
+    bool show(const Name &name, const __FlashStringHelper *help) {
+        return _show(String(name), CmdSerial_ShowTime, String(help));
     }
 
     /**
      * Shows data with help text and custom interval.
      */
-    bool show(const String &name, const String &help, unsigned long milliSeconds) {
-        return _show(name, milliSeconds, help);
+    template<typename Name>
+    bool show(const Name &name, const char *help, unsigned long milliSeconds) {
+        return _show(String(name), milliSeconds, String(help));
+    }
+
+    template<typename Name>
+    bool show(const Name &name, const String &help, unsigned long milliSeconds) {
+        return _show(String(name), milliSeconds, help);
+    }
+
+    template<typename Name>
+    bool show(const Name &name, const __FlashStringHelper *help, unsigned long milliSeconds) {
+        return _show(String(name), milliSeconds, String(help));
     }
 
     String get() {
@@ -269,10 +312,11 @@ class CmdSerial {
     /**
      * An call from single tag only
      */
-    bool set(const String &name) {
-
-        if (_set(name, "")) {
-            printMessage(name);
+    template<typename Name>
+    bool set(const Name &name) {
+        String n(name);
+        if (_set(n, "")) {
+            printMessage(n);
             return true;
         }
         return false;
@@ -286,12 +330,18 @@ class CmdSerial {
      *  @param isMessaging Print confirmation after set (default true)
      *  @return true when the value was applied
      */
-    template<typename T>
-    bool set(const String &name, T &data, const String &help = "", bool isMessaging = true) {
-        if (_set(name, help)) {
+    template<typename Name, typename T>
+    bool set(const Name &name, T &data, bool isMessaging = true) {
+        return set(name, data, "", isMessaging);
+    }
+
+    template<typename Name, typename T, typename Help>
+    bool set(const Name &name, T &data, const Help &help, bool isMessaging = true) {
+        String n(name);
+        if (_set(n, String(help))) {
             fromCmd(cmdData, data);
             if (isMessaging)
-                printMessage(name);
+                printMessage(n);
             return true;
         }
         return false;
