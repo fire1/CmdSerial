@@ -1,118 +1,153 @@
-# Arduino CmdSerial Library
+# CmdSerial
 
-The CmdSerial library provides a simple way to handle commands and data received via the Serial port on Arduino devices.
-It allows you to define commands, set values, and receive input from the Serial monitor in a structured manner.
+Debug and control Arduino sketches from the Serial Monitor.
+
+Set variables, watch live values, and list commands — without scattering `Serial.print` calls through your firmware.
+
+## Features
+
+- **Set** sketch variables from Serial (`temp 23.4`)
+- **Show / stop** live monitoring of values (`sensors show`)
+- Built-in **help** listing for all registered commands
+- Templated `set()` / `print()` — works with `int`, `float`, `String`, and other numeric types
+- `"..."_f` PROGMEM labels (same idea as `F("...")`, less noise)
+- `println(...)` to dump several fields on one line
 
 ## Installation
 
-To use the CmdSerial library, follow these steps:
+**Arduino Library Manager:** search for `CmdSerial`, or install from ZIP / clone into your `libraries` folder:
 
-1. Download the library source code from [GitHub repository](https://github.com/example/cmd-serial).
-2. Extract the downloaded ZIP file.
-3. Copy the extracted folder into the `libraries` folder of your Arduino sketchbook directory.
-4. Rename the folder to `CmdSerial`.
-5. Restart the Arduino IDE if it's open.
+```bash
+git clone https://github.com/fire1/CmdSerial.git
+```
 
-## Usage
+Then restart the Arduino IDE.
 
-### Initialization /simple/
-
-To use the CmdSerial library in your Arduino sketch, include the `CmdSerial.h` header file at the beginning of your
-sketch:
+## Quick start
 
 ```cpp
 #include <CmdSerial.h>
-```
 
-Then, create an instance of the CmdSerial class:
-
-```cpp
 CmdSerial cmd;
-```
+int testInt = 0;
+float temperature = 21.5;
 
-### Listening for Commands
+void setup() {
+    Serial.begin(9600);
+}
 
-To listen for commands from the Serial monitor, call the listen() method in the loop() function of your sketch:
-
-```cpp
 void loop() {
-    cmd.listen();
-    // Your code here
-} 
+    cmd.listen();  // required every loop
+
+    cmd.set("test"_f, testInt, "Set the test integer"_f);
+    cmd.set("temp"_f, temperature, "Set temperature"_f);
+
+    if (cmd.show("test"_f, "Monitor testInt"_f)) {
+        cmd.print("Test value:"_f, testInt);
+    }
+
+    if (cmd.show("sensors"_f, "Print several values"_f)) {
+        cmd.println("temp"_f, temperature, "test"_f, testInt);
+    }
+}
 ```
 
-### Define command
+Open the Serial Monitor (newline ending). Try:
 
-You can define commands using the show() method. For example, to respond to the command `data show`, you would write:
+| Command | Effect |
+|---------|--------|
+| `help` | List all commands |
+| `test help` | Help for one command |
+| `test 12` | Set `testInt` to `12` |
+| `temp 23.4` | Set `temperature` |
+| `test show` | Start monitoring |
+| `test stop` | Stop monitoring |
+| `sensors show` | Print several fields each interval |
+
+## Usage
+
+### Setup
 
 ```cpp
-int testInt = 42;
-if (cmd.show("data"_f)) { // By default every 500ms while monitoring is on
-    cmd.print("Output message"_f, testInt);  // "..."_f == F("...") — stays in PROGMEM
-}
-
-uint8_t banana = 100;
-if (cmd.show("banana"_f, "Some information for help."_f, 1000)) { // 1000ms interval
-    cmd.print("Banana output"_f, banana);
-}
-
-// Several values on one line
-float temp = 21.5;
-if (cmd.show("sensors"_f)) {
-    cmd.println("temp"_f, temp, "banana"_f, banana);
-}
+#include <CmdSerial.h>
+CmdSerial cmd;           // uses Serial by default
+// CmdSerial cmd(Serial1);  // or any Stream
 ```
 
-`F("...")` still works. `"..."_f` is the same idea with less noise.
+Call `cmd.listen()` once per `loop()`.
 
-### Setting Values
-
-You can set values in your sketch based on commands received via Serial. Use the set() method to define how values
-should be set. For example, to set a value named "temperature", you would write:
+### Set a variable
 
 ```cpp
 float temperature;
-if (cmd.set(F("temperature"), temperature)) {
-    // Value has been set, do something extra with it...
+if (cmd.set("temperature"_f, temperature, "Board temperature"_f)) {
+    // optional: ran only when a new value was applied
 }
 ```
-### The Help function
-The `CmdSerial` library provides a built-in mechanism to retrieve information about available commands and their usage.
 
-Here's how to access it:
+Serial input: `temperature 21.5`
 
-**List all commands by typing `help` in the Serial Monitor:** \
-This will trigger the library to print a list of all defined (set,show) commands to the Serial Monitor.
+`set()` works with numeric types and `String`. Confirmation messaging can be disabled with a fourth argument: `false`.
 
-**Individual Command Help:**\
-For more detailed information about a specific command,type the command name followed by "help" in the Serial Monitor.\
-For example, if you have a command named `data`, you would type `data help`.
+### Monitor values (`show`)
 
+```cpp
+if (cmd.show("data"_f)) {                    // every 500 ms while active
+    cmd.print("Output"_f, testInt);
+}
 
-### Serial monitor
+if (cmd.show("banana"_f, "Help text"_f, 1000)) {  // custom interval
+    cmd.print("Banana"_f, banana);
+}
+```
 
-To send data from the Serial monitor to your sketch, use the defined command name in the set() method followed by your
-value.\
-The library also provides two keywords: show to start monitoring and stop to stop monitoring for the defined command
-name. \
-If you need to customize these keywords, please refer to the source code of the library.
+- `name show` — start printing on the interval
+- `name stop` — stop
 
-## Online example / Playground
+### Print helpers
 
-You can check the online simulation example of the library here: \
-https://wokwi.com/projects/392856762315911169
+```cpp
+cmd.print("label"_f, value);                           // one line: label <sep> value
+cmd.println("temp"_f, temperature, "hum"_f, humidity); // several fields on one line
+```
 
-Type `help` in the terminal in order to get a list of avelabe commands.
+### PROGMEM strings (`_f`)
 
-* `test 12` will set `testInt` to 12.
-* `test show` starts monitoring of the value in the sketch.
-* `test stop` stops the monitoring.
-* `sensors show` prints several fields on one line.
+`"Hello"_f` keeps the text in flash on AVR, like `F("Hello")`:
+
+```cpp
+cmd.print("Test value:"_f, testInt);
+// same as:
+cmd.print(F("Test value:"), testInt);
+```
+
+### Help
+
+| Input | Result |
+|-------|--------|
+| `help` | Lists every `set` / `show` command registered in the sketch |
+| `<name> help` | Help text for that command |
+
+### Keywords
+
+Default separator is space; end of line is `\n`.
+
+| Keyword | Role |
+|---------|------|
+| `show` | Start monitoring |
+| `stop` | Stop monitoring |
+| `help` | List or describe commands |
+
+Override via macros before including the header (`CmdSerial_KeywordShow`, `CmdSerial_ShowTime`, …) — see `src/CmdSerial.h`.
+
+## Try it online
+
+[Wokwi playground](https://wokwi.com/projects/392856762315911169) — type `help` in the terminal.
 
 ## Documentation
 
-All methods can be found in [api.md](docs/api.md).
+Full API: [docs/api.md](docs/api.md)
 
 ## License
 
-This library is released under the MIT License. See the LICENSE file for details.
+MIT — see [LICENSE.txt](LICENSE.txt).
