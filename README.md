@@ -46,19 +46,24 @@ void loop() {
 You can define commands using the show() method. For example, to respond to the command `data show`, you would write:
 
 ```cpp
-int testInt=42;
-if (cmd.show(F("data"))) { // By default 500ms will  display contents in if statement.
-    cmd.print(F("Output message"),testInt); // This will be displayed in Serial monitor.
+int testInt = 42;
+if (cmd.show("data"_f)) { // By default every 500ms while monitoring is on
+    cmd.print("Output message"_f, testInt);  // "..."_f == F("...") — stays in PROGMEM
 }
 
-uint8_t banana= 100;
-if(cmd.show(F("banana",F("Some information for help."), 1000)){ // Changing the display time to 1000ms
-    cmd.print(F("Banana output"), banana);
+uint8_t banana = 100;
+if (cmd.show("banana"_f, "Some information for help."_f, 1000)) { // 1000ms interval
+    cmd.print("Banana output"_f, banana);
 }
 
-
-
+// Several values on one line
+float temp = 21.5;
+if (cmd.show("sensors"_f)) {
+    cmd.println("temp"_f, temp, "banana"_f, banana);
+}
 ```
+
+`F("...")` still works. `"..."_f` is the same idea with less noise.
 
 ### Setting Values
 
@@ -100,8 +105,9 @@ https://wokwi.com/projects/392856762315911169
 Type `help` in the terminal in order to get a list of avelabe commands.
 
 * `test 12` will set `testInt` to 12.
-* `test show` Starts monitoring of the actual value in the sketch.
-* `test stop` Stops the monitoring.
+* `test show` starts monitoring of the value in the sketch.
+* `test stop` stops the monitoring.
+* `sensors show` prints several fields on one line.
 
 ## Documentation
 

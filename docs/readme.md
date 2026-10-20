@@ -9,5 +9,7 @@ CmdSerial is a simple Arduino library that provides a command parsing functional
 
 - Parse incoming Serial commands
 - Define actions for specific commands
-- Support for setting values with various data types (float, int, uint8_t, int8_t, uint16_t, double, String)
-- Display messages with numerical values
+- Set sketch variables from Serial (any numeric type or String via a single templated API)
+- Print labels and values without per-type overloads
+- Print several fields on one line with `println(...)`
+- PROGMEM string literal `"..."_f` (same as `F("...")`)
